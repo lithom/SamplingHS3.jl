@@ -47,7 +47,7 @@ Plots.plot!( z_sampled[2] , z_sampled[3] , z_sampled[1][:]    , subplot=2 , st =
 
 
 ## MCMC sampling with restriction
-Let's show the restriction possibilities by defining the following "shell" of the function f:
+Let's restrict the sampling to torus-shaped "shell"s of the function f_cost_torus:
 ```julia
 f_cost_torus = (x) -> (sqrt( sum(x.^2) ) - 5)^2
 mcmc_result_2 = SamplingHS3.run_mcmc( x0 , f_density(x0) , f_density , f_cost_torus , 1.0 , bounding_box_G  , bounding_box_h , conf_only_mh )
@@ -60,6 +60,8 @@ Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , (x,y) 
 Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , (x,y) -> 0. , subplot=2 , st = [:contourf]) # just black backround
 Plots.plot!( z_sampled_tor[2], z_sampled_tor[3] , z_sampled_tor[1][:]    , subplot=2 , st = [:contourf] , xlim=[-20;20] , ylim=[-20;20])
 ```
+![Inverted egg crate function, restricted to torus at distance 5 from center](https://github.com/lithom/SamplingHS3.jl/blob/master/resources/two_ec_densities_torus.png
+)
 
 
 

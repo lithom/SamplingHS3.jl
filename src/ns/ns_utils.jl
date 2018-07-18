@@ -66,7 +66,7 @@ function resample_ns_data( itd::Vector{NSIterData} )
 
       # now draw proportional to iv_parts from the sorted out samples of the iterations..
       X   = zeros(size(itd[1].X_sorted_out,1),0)
-      X_p = zero(0)
+      X_p = zeros(0)
       for zi in 1:length(itd)
             X   = [ X     itd[zi].X_sorted_out ]
             X_p = [ X_p ; ones(size(itd[zi].X_sorted_out,2)) * (mean(iv_parts[:,zi]) / size(itd[zi].X_sorted_out,2) )  ]

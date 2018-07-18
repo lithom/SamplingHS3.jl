@@ -38,12 +38,28 @@ using Plots, GR
 gr()
 Plots.plot(layout=(1,2))
 z_sampled = SamplingHS3.bin2d( mcmc_result.dd.xx , 40 , 40 )
-Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , f_likelihood_2p , subplot=1 , st = [:contourf])
-Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , z_sampled[:]    , subplot=2 , st = [:contourf])
+Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , (x,y) -> f_density([x;y]) , subplot=1 , st = [:contourf])
+Plots.plot!( z_sampled[2] , z_sampled[3] , z_sampled[1][:]    , subplot=2 , st = [:contourf])
 ```
 
+![Inverted egg crate function](https://github.com/lithom/SamplingHS3.jl/blob/master/resources/two_ec_densities.png
+)
 
 
+## MCMC sampling with restriction
+Let's show the restriction possibilities by defining the following "shell" of the function f:
+```julia
+f_cost_torus = (x) -> (sqrt( sum(x.^2) ) - 5)^2
+mcmc_result_2 = SamplingHS3.run_mcmc( x0 , f_density(x0) , f_density , f_cost_torus , 1.0 , bounding_box_G  , bounding_box_h , conf_only_mh )
+#Plot
+using Plots, GR
+gr()
+Plots.plot(layout=(1,2))
+z_sampled_tor = SamplingHS3.bin2d( mcmc_result_torus.dd.xx , 40 , 40 )
+Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , (x,y) -> f_density([x;y]) , subplot=1 , st = [:contourf])
+Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , (x,y) -> 0. , subplot=2 , st = [:contourf]) # just black backround
+Plots.plot!( z_sampled_tor[2], z_sampled_tor[3] , z_sampled_tor[1][:]    , subplot=2 , st = [:contourf] , xlim=[-20;20] , ylim=[-20;20])
+```
 
 
 

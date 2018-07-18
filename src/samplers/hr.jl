@@ -114,7 +114,7 @@ x_result3 = XBisection( x1 -> x1>(1e6-4) , 5 , 1e6 , 5 );
 
 Thomas Liphardt, May 2018
 """
-function bisection( f , threshold::Float64 , a::Array{Float64,1} , b::Array{Float64,1} , tdata::HRSamplingTrackingData ; bisect_max_it::Int64=-1 , bisect_max_rel_tol::Float64=NaN , bisect_max_abs_tol=Inf , bisect_track_samples::Int64=0)
+function bisection( f , threshold::Float64 , a::Array{Float64,1} , b::Array{Float64,1} , tdata::HRSamplingTrackingData ; bisect_max_it::Int=-1 , bisect_max_rel_tol::Float64=NaN , bisect_max_abs_tol=Inf , bisect_track_samples::Int64=0)
     #----- default parameters: --------------------------------
     if(bisect_max_it<0); bisect_max_it = 16; end
     if(isnan(bisect_max_rel_tol)); bisect_max_rel_tol = 1e-3; end

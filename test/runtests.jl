@@ -6,4 +6,9 @@ else
 end
 
 # write your own tests here
-@test 1 == 2
+@testset "HR Tests" begin include("test_hr.jl") end
+@testset "MH Tests" begin include("test_mh.jl") end
+@testset "NS Integration" begin include("test_ns_integration_01.jl") end
+
+
+#@testset "HR Tests" begin include("test_hr.jl") end

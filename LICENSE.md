@@ -1,6 +1,6 @@
 The SamplingHS3.jl package is licensed under the MIT "Expat" License:
 
-> Copyright (c) 2018: lithomas.
+> Copyright (c) 2018: Thomas Liphardt.
 >
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy

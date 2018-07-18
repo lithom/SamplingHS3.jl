@@ -42,7 +42,8 @@ Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , f_like
 Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , z_sampled[:]    , subplot=2 , st = [:contourf])
 ```
 
-![Inverted egg crate function](https://github.com/lithom/SamplingHS3.jl/blob/master/res/double_ec_densities.png)
+![Inverted egg crate function](https://github.com/lithom/SamplingHS3.jl/blob/master/resources/two_ec_densities.png
+)
 
 
 

@@ -60,17 +60,17 @@ function HRSamplingTrackingData()
 end
 
 struct HRStepConfig
-    bisect_max_it::Int64
+    bisect_max_it::Int
     bisect_rel_tol::Float64
     bisect_abs_tol::Float64
-    linesearch_max_tries::Int64
-    linedensity_fevals::Int64
+    linesearch_max_tries::Int
+    linedensity_fevals::Int
 
-    track_chords::Int64
-    track_bisection::Int64 # 1: viable samples, 2: all samples
-    track_linesearch::Int64  # 1: viable samples, 2: all samples
+    track_chords::Int
+    track_bisection::Int # 1: viable samples, 2: all samples
+    track_linesearch::Int  # 1: viable samples, 2: all samples
 end
-function HRStepConfig( ; bisect_max_it=-1 , bisect_rel_tol=NaN , bisect_abs_tol=Inf , linesearch_max_tries=-1 , linedensity_fevals=100 ,  track_chords=0 , track_bisection::Int64=0 , track_linesearch::Int64=0 )
+function HRStepConfig( ; bisect_max_it::Int=Int64(-1) , bisect_rel_tol=NaN , bisect_abs_tol=Inf , linesearch_max_tries::Int=Int64(-1) , linedensity_fevals::Int=Int64(100) ,  track_chords::Int=Int64(0) , track_bisection::Int=Int64(0) , track_linesearch::Int=Int64(0) )
     HRStepConfig(bisect_max_it,bisect_rel_tol,bisect_abs_tol,linesearch_max_tries,linedensity_fevals,track_chords,track_bisection,track_linesearch)
 end
 

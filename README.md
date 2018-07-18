@@ -4,7 +4,38 @@
 
 A collection of simple MCMC samplers, with tools for running nested sampling and methods for parameter space exploration.
 
-More Info coming soon..
+
+# MCMC samplers
+The provided MCMC samplers sample according to a specific density function f. Additionally, it is possible to restrict the sampling to "likelihood shells", given by an upper bound on a second function f_cost
+
+Let's define some density function over a 2d polytope (a square), and then use the mcmc samplers:
+```julia
+# density function
+f_ec = (x::Vector{Float64}) -> ( sin(x[1])^2 + sin(x[2])^2 ) / ( 0.1 + x[1]*x[1] + x[2]*x[2] )^(1/2.5)
+
+# polytope:
+xlim = [-20.,20.]; ylim = [-20.,20.]
+bounding_box_G =[eye(2);-eye(2)]
+bounding_box_h =[-xlim[1];xlim[2];-ylim[1];ylim[2]]
+```
+
+Sample normally:
+```julia
+# settings for mcmc sampling:                    steps  cov. matrix   %hr   %mh
+conf_only_mh = SamplingHS3.DecorrelationConfig( 100000 , 1.0*eye(2) , 0.0 , 1.0 )
+# starting point:
+x0 = [5.;5.]
+# sample
+#                                              these two parameter can be used to restrict the sampled space
+#                                                                         ___|___
+#                                                                        |       | 
+mcmc_result = SamplingHS3.run_mcmc( x0 , f_density(x0) , f_density , (x) -> 0 , 1.0 , bounding_box_G  , bounding_box_h , conf_only_mh )
+
+
+```
+
+
+
 
 
 

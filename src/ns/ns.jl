@@ -327,8 +327,7 @@ decorrelates the given samples inside {x|f(x)<threshold} by running mcmc steps
 
 # Note
 if all steps fail, then the returned value of x (xf) will be NaN
-"""
-"""
+    
 function decorrelate( x_::Array{Float64,1} , f , threshold::Float64 , G::Array{Float64,2} , h::Array{Float64,1} , conf::DecorrelationConfig)
     d = length(x_)
 

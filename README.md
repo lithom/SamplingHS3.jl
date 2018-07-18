@@ -12,7 +12,7 @@ Let's define some density function over a 2d polytope (a square), and then use t
 ```julia
 # density function
 f_ec = (x::Vector{Float64}) -> ( sin(x[1])^2 + sin(x[2])^2 ) / ( 0.1 + x[1]*x[1] + x[2]*x[2] )^(1/2.5)
-
+f_density = f_ec
 # polytope:
 xlim = [-20.,20.]; ylim = [-20.,20.]
 bounding_box_G =[eye(2);-eye(2)]
@@ -30,9 +30,19 @@ x0 = [5.;5.]
 #                                                                         ___|___
 #                                                                        |       | 
 mcmc_result = SamplingHS3.run_mcmc( x0 , f_density(x0) , f_density , (x) -> 0 , 1.0 , bounding_box_G  , bounding_box_h , conf_only_mh )
-
-
 ```
+
+Plot result (binned):
+```julia
+using Plots, GR
+gr()
+Plots.plot(layout=(1,2))
+z_sampled = SamplingHS3.bin2d( mcmc_result.dd.xx , 40 , 40 )
+Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , f_likelihood_2p , subplot=1 , st = [:contourf])
+Plots.plot!( linspace(xlim[1],xlim[2],40), linspace(ylim[1],ylim[2],40) , z_sampled[:]    , subplot=2 , st = [:contourf])
+```
+
+
 
 
 

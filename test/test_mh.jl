@@ -20,6 +20,7 @@ for zi in 1:10_000
     x = mhstep_result[2]
 end
 
-
-using Plots
-Plots.plot(X_Collected[1,:],X_Collected[2,:])
+if(false)
+    using Plots
+    Plots.plot(X_Collected[1,:],X_Collected[2,:])
+end

@@ -55,9 +55,13 @@ for zi in 1:n_test
 end
 toc()
 
-using Plots
+
 xx_x_collected = reduce( (x,y) -> [x y] ,X_Collected)
-Plots.plot(  xx_x_collected[1,1:400],xx_x_collected[2,1:400])
+
+if(false)
+    using Plots
+    Plots.plot(  xx_x_collected[1,1:400],xx_x_collected[2,1:400])
+end
 
 tdata   = SamplingHS3.HRSamplingTrackingData()
 hrconf  = SamplingHS3.HRStepConfig(;track_chords=2,track_bisection=2,track_linesearch=2)
@@ -76,10 +80,11 @@ x_all_tracked = reduce( (x,y) -> [x y] , tdata.X)
 x_all_bisect_a = x_all_tracked[ : , tdata.X_opcode.==65 ]
 x_all_bisect_b = x_all_tracked[ : , tdata.X_opcode.==66 ]
 
-Plots.plot()
-Plots.scatter!( x_all_bisect_a[1,1:2000] , x_all_bisect_a[2,1:2000] )
-Plots.scatter!( x_all_bisect_b[1,1:2000] , x_all_bisect_b[2,1:2000] )
-
+if(false)
+    Plots.plot()
+    Plots.scatter!( x_all_bisect_a[1,1:2000] , x_all_bisect_a[2,1:2000] )
+    Plots.scatter!( x_all_bisect_b[1,1:2000] , x_all_bisect_b[2,1:2000] )
+end
 
 ## Test with dist2line function..
 target_line = Vector{SamplingHS3.LineSegment}()
@@ -105,6 +110,9 @@ toc()
 x_all_tracked = reduce( (x,y) -> [x y] , tdata.X)
 x_all_bisect_a = x_all_tracked[ : , tdata.X_opcode.==65 ]
 x_all_bisect_b = x_all_tracked[ : , tdata.X_opcode.==66 ]
-Plots.plot()
-Plots.scatter!( x_all_bisect_a[1,1:2000] , x_all_bisect_a[2,1:2000] )
-Plots.scatter!( x_all_bisect_b[1,1:2000] , x_all_bisect_b[2,1:2000] )
+
+if(false)
+    Plots.plot()
+    Plots.scatter!( x_all_bisect_a[1,1:2000] , x_all_bisect_a[2,1:2000] )
+    Plots.scatter!( x_all_bisect_b[1,1:2000] , x_all_bisect_b[2,1:2000] )
+end

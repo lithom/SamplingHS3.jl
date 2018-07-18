@@ -30,7 +30,7 @@ function bin2d( x::Array{Float64,2} , nbx::Int64 , nby::Int64 )
             xb[zi,zj] = sum(idx_ij)
         end
     end
-    return xb
+    return ( xb , 0.5.*(bbx[2:end]+bbx[1:end-1]) , 0.5.*(bby[2:end]+bby[1:end-1]) )
 end
 
 
@@ -48,16 +48,17 @@ function bin2d( x::Array{Float64,2} , y::Array{Float64,1} , nbx::Int64 , nby::In
             append!(xb[zi,zj], y[idx_ij] )
         end
     end
-    return xb
+    return (xb, 0.5.*(bbx[2:end]+bbx[1:end-1]) , 0.5.*(bby[2:end]+bby[1:end-1]) )
 end
 
 function bin2d( x::Array{Float64,2} , y::Array{Float64,1} , nbx::Int64 , nby::Int64 , op::Any)
-    b2dr = bin2d(x::Array{Float64,2} , y::Array{Float64,1} , nbx::Int64 , nby::Int64)
+    b2dr_a = bin2d(x::Array{Float64,2} , y::Array{Float64,1} , nbx::Int64 , nby::Int64)
+    b2dr = b2dr_a[1]
     opx  = zeros(nby,nbx)
     for zi=1:nbx
         for zj=1:nby
             opx[zi,zj] = op(b2dr[zi,zj])
         end
     end
-    return opx
+    return (opx , b2dr_a[2] , b2dr_a[3] )
 end

@@ -63,6 +63,21 @@ Plots.plot!( z_sampled_tor[2], z_sampled_tor[3] , z_sampled_tor[1][:]    , subpl
 ![Inverted egg crate function, restricted to torus at distance 5 from center](https://github.com/lithom/SamplingHS3.jl/blob/master/resources/two_ec_densities_torus.png
 )
 
+## Adaptive MCMC sampling
+Let's use adaptive MCMC sampling for the same function:
+
+```julia
+config_mcmc = SamplingHS3.MCMCConfig() # default config
+mcmc_result_adaptive_01 = SamplingHS3.run_adaptive_mcmc( 10000 , x0 , f_density(x0) , f_density , (x) -> 0 , 1.0 , bounding_box_G  , bounding_box_h , config_mcmc )
+```
+
+Then we can plot and compare the sampling results (full example and plotting code is in "adaptive_mcmc_example_01.jl"):
+Center: non-adaptive, Right: adaptive.
+![Adaptive vs. non adaptive MCMC sampling](https://github.com/lithom/SamplingHS3.jl/blob/master/resources/non_adaptive_vs_adaptive_01.png
+)
+
+
+
 
 
 

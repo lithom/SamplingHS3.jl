@@ -36,7 +36,7 @@ struct DecorrelationData
 end
 
 function DecorrelationData()
-    return DecorrelationData( Array{Float64,2}() , Int64(0) , Int64(0) , Vector{Int64}() , Array{Float64,2}() , Array{Float64,1}() , Array{Float64,1}(), HRSamplingTrackingData() , MHSamplingTrackingData() )
+    return DecorrelationData( Array{Float64}(0,0) , Int64(0) , Int64(0) , Vector{Int64}() , Array{Float64}(0,0) , Array{Float64,1}() , Array{Float64,1}(), HRSamplingTrackingData() , MHSamplingTrackingData() )
 end
 function Base.hcat(a::DecorrelationData,b::DecorrelationData)
     return DecorrelationData( [a.xv b.xv] , a.steps_success+b.steps_success , a.steps_fail+b.steps_fail , [a.steps;b.steps] , [a.xx b.xx] , [a.xx_fdens ; b.xx_fdens] , [a.xx_fcost ; b.xx_fcost] , [ a.sdata_hr b.sdata_hr] , [ a.sdata_mh b.sdata_mh] )

@@ -36,7 +36,10 @@ struct DecorrelationData
 end
 
 function DecorrelationData()
-    return DecorrelationData( Array{Float64,2}() , Vector{Float64}() , Vector{Float64}() , Array{Float64,2}() , Array{Float64,1}() , Array{Float64,1}(), HRSamplingTrackingData() , MHSamplingTrackingData() )
+    return DecorrelationData( Array{Float64,2}() , Int64(0) , Int64(0) , Vector{Int64}() , Array{Float64,2}() , Array{Float64,1}() , Array{Float64,1}(), HRSamplingTrackingData() , MHSamplingTrackingData() )
+end
+function Base.hcat(a::DecorrelationData,b::DecorrelationData)
+    return DecorrelationData( [a.xv b.xv] , a.steps_success+b.steps_success , a.steps_fail+b.steps_fail , [a.steps;b.steps] , [a.xx b.xx] , [a.xx_fdens ; b.xx_fdens] , [a.xx_fcost ; b.xx_fcost] , [ a.sdata_hr b.sdata_hr] , [ a.sdata_mh b.sdata_mh] )
 end
 
 #function DecorrelationData( dc1 , dc2 )
@@ -49,7 +52,9 @@ struct DecorrelationResult
     xfcost::Float64
     dd::DecorrelationData
 end
-
+function DecorrelationResult()
+    return DecorrelationResult([NaN],NaN,NaN,DecorrelationData())
+end
 
 
 """
@@ -93,6 +98,7 @@ MCMCConfig configures the behavior of the mcmc decorrelation procedure
   - `p_hr::Float64`: probability of hr steps
   - `p_mh::Float64` : probability of mh steps
   - `cov_estim::CovEstimConfig` : covariance estimation configuration
+  - `cov_initial::Array{Float64,2}` : initial covariance. Here, [NaN] is an alias for eye(dim)
 ...
 
 """
@@ -100,10 +106,11 @@ struct MCMCConfig
     p_hr::Float64
     p_mh::Float64
     cov_estim::CovEstimConfig
+    cov_initial::Array{Float64,2} # if [NaN], then we take eye(dim)
 end
 
 function MCMCConfig()
-    return MCMCConfig(0.5,0.5,CovEstimConfig())
+    return MCMCConfig(0.5,0.5,CovEstimConfig(),reshape([NaN],1,1))
 end
 
 """
@@ -258,7 +265,11 @@ function nested_sampling( X_init::Array{Float64,2} , f::Any , G::Array{Float64,2
                 print( @sprintf("ecov : blowup_abs: %6.3f  , blowup_rel_maxsv: %6.3f   , blowup_rel_minsv: %6.3f  \n", (conf.mcmc.cov_estim.blowup_abs) , (conf.mcmc.cov_estim.blowup_rel_maxsv*maximum(sv_ecov)) , (conf.mcmc.cov_estim.blowup_rel_minsv*minimum(sv_ecov)) ) )
             end
         else
-            ecov = ecov_raw[:,:]
+            if( isnan(conf.mcmc.cov_initial[1]) )
+                ecov = ecov_raw[:,:]
+            else
+                ecov = conf.mcmc.cov_initial[:,:]
+            end
         end
 
         # create decorrelation data vector
@@ -327,7 +338,7 @@ decorrelates the given samples inside {x|f(x)<threshold} by running mcmc steps
 
 # Note
 if all steps fail, then the returned value of x (xf) will be NaN
-    
+
 function decorrelate( x_::Array{Float64,1} , f , threshold::Float64 , G::Array{Float64,2} , h::Array{Float64,1} , conf::DecorrelationConfig)
     d = length(x_)
 

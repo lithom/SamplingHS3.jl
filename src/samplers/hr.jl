@@ -58,6 +58,10 @@ end
 function HRSamplingTrackingData()
     return HRSamplingTrackingData( Vector{Vector{Float64}}() , Vector{Float64}() , Vector{Float64}() , Vector{Bool}() , Vector{Int64}() , 0 ,0 ,0 , 0)
 end
+function Base.hcat(a::HRSamplingTrackingData,b::HRSamplingTrackingData)
+    return HRSamplingTrackingData( [a.X;b.X] , [a.X_fdens;b.X_fdens] , [a.X_fcost;b.X_fcost] , [a.X_viable;b.X_viable] , [a.X_opcode;b.X_opcode] , a.fevals_expand+b.fevals_expand , a.fevals_bisect+b.fevals_bisect , a.fevals_linesearch+b.fevals_linesearch , a.fevals_fdens+b.fevals_fdens )
+end
+
 
 struct HRStepConfig
     bisect_max_it::Int

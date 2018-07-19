@@ -104,3 +104,129 @@ function run_mcmc( x_::Array{Float64,1} , x_f_density::Float64 , f_density , f_c
         return DecorrelationResult(x,NaN,NaN,DecorrelationData( zeros(d,0) , cnt_successes , cnt_fails , steps_data ,zeros(d,0),[NaN],[NaN],tdata_hr,tdata_mh ))
     end
 end
+
+
+struct AdaptiveMCMCResult
+    x::Vector{Float64}
+    xfdens::Float64
+    xfcost::Float64
+    dd::DecorrelationData
+    ecov_raw::Dict{Int,Array{Float64,2}}
+    ecov_regularized::Dict{Int,Array{Float64,2}}
+end
+
+
+function run_adaptive_mcmc( steps::Int , x_::Array{Float64,1} , x_f_density::Float64 , f_density , f_cost , threshold::Float64 , G::Array{Float64,2} , h::Array{Float64,1} , conf_mcmc::MCMCConfig ; steps_between_cov_estim::Int = 5)
+
+    output_level = 1
+
+    d    = length(x_)
+    xi   = copy(x_)
+    xi_f = x_f_density
+
+
+    # create decorrelation data vector
+    dd::Vector{DecorrelationData} = Vector{DecorrelationData}()
+
+    # create structures to save ecov info:
+    data_ecov_raw = Dict{Int,Array{Float64,2}}()
+    data_ecov_regularized = Dict{Int,Array{Float64,2}}()
+
+    # Performed steps
+    Xv = zeros(length(xi),0)
+
+    # Init decorr_result struct
+    sh_dcr::DecorrelationResult = DecorrelationResult()
+
+    #
+    total_steps = 0
+    while(total_steps < steps)
+        # 3. decorrelate
+        # 3.1 estimate covariance..
+        ecov_raw = eye(d)
+        ecov     = NaN * ones(d,d)
+        if( size(Xv,2)>4*d )
+            if(size(Xv,2)>conf_mcmc.cov_estim.n_considered)
+                ecov_raw = cov(Xv[ : , (end-conf_mcmc.cov_estim.n_considered+1):end ]' )
+            else
+                ecov_raw = cov(Xv')
+            end
+            sv_ecov = svd(ecov_raw)[2]
+            ecov = ecov_raw + diagm(ones(d))*conf_mcmc.cov_estim.blowup_abs + diagm(ones(d)) * maximum(sv_ecov) * conf_mcmc.cov_estim.blowup_rel_maxsv + diagm(ones(d)) * minimum(sv_ecov) * conf_mcmc.cov_estim.blowup_rel_minsv
+
+            if(output_level>=2)
+                print("\necov_raw:\n$(ecov_raw)\n")
+                print("ecov_regularized:\n$(ecov)\n")
+                print("ecov_raw_sv: $(sv_ecov')\n")
+                #print("ecov : blowup_abs: $(conf.mcmc.cov_estim.blowup_abs) , blowup_rel_max_sv: $(conf.mcmc.cov_estim.blowup_rel_maxsv*maximum(sv_ecov))) , blowup_rel_min_sv: $(conf.mcmc.cov_estim.blowup_rel_minsv*minimum(sv_ecov)) \n")
+                print( @sprintf("ecov : blowup_abs: %6.3f  , blowup_rel_maxsv: %6.3f   , blowup_rel_minsv: %6.3f  \n", (conf_mcmc.cov_estim.blowup_abs) , (conf_mcmc.cov_estim.blowup_rel_maxsv*maximum(sv_ecov)) , (conf_mcmc.cov_estim.blowup_rel_minsv*minimum(sv_ecov)) ) )
+            end
+        else
+            ecov = ecov_raw[:,:]
+        end
+        data_ecov_raw[total_steps]          = ecov_raw
+        data_ecov_regularized[total_steps]  = ecov
+
+
+        #threshold::Float64 = threshold
+        steps_i            = min( steps-total_steps , steps_between_cov_estim )
+        dc = DecorrelationConfig( steps_i , ecov , conf_mcmc.p_hr , conf_mcmc.p_mh )
+        #sh_dcr = run_mcmc( xi , NaN, f_density , f_cost, threshold , G, h , dc )
+        sh_dcr = run_mcmc( xi , xi_f , f_density , f_cost, threshold , G, h , dc )
+        total_steps += sh_dcr.dd.steps_success
+
+        # add decorrelation data
+        push!(dd,sh_dcr.dd)
+        # add performed steps
+        if(sh_dcr.dd.steps_success>1)
+            Xv  = [Xv    sh_dcr.dd.xv ]
+        end
+
+        xi   = sh_dcr.x
+        xi_f = sh_dcr.xfdens
+        #xi_fcost = sh_dcr.xfcost
+    end
+
+    # collapse the dds into one..
+    dd_collapsed = reduce( Base.hcat , dd )
+    
+    return AdaptiveMCMCResult( sh_dcr.x , sh_dcr.xfdens , sh_dcr.xfcost , dd_collapsed , data_ecov_raw , data_ecov_regularized )
+end
+
+
+        #sh_dcr::Array{DecorrelationResult,1} = Array{DecorrelationResult}(size(X0,2))
+        # parallel / not parallel
+        #if(false)
+        #    # 3.2 decorrelate samples..
+        #    sh_dcr_af = Array{Future}(size(X0,2))
+        #    for zi in 1:size(X0,2)
+        #        sh_dcr_af[zi] = @spawn decorrelate( X0[:,zi] , f, threshold , G, h , dc )
+        #    end
+        #    for zi in 1:size(X0,2)
+        #        sh_dcr[zi] = fetch(sh_dcr_af[zi])
+        #    end
+        #else
+        #    for zi in 1:size(X0,2)
+        #    sh_dcr[zi] = run_mcmc( X0[:,zi] , NaN, Void(), f, threshold , G, h , dc )#decorrelate( X0[:,zi] , f, threshold , G, h , dc )
+        #        #sh_dcr[zi] = decorrelate( X0[:,zi] , f, threshold , G, h , dc )
+        #        #if(sh_dcr[zi].)
+        #    end
+        #end
+
+        #X_new   = Array{Float64}(d,0)
+        #X_new_f = Array{Float64}(0)
+        #Xv_new  = Array{Float64}(d,0)
+        ##for zi in 1:length(sh_dcr)
+        #    push!(dd,sh_dcr[zi].dd)
+        #    if(sh_dcr[zi].dd.steps_success>1)
+        #        X_new   = [ X_new sh_dcr[zi].x ]
+        #        Xv_new  = [ Xv_new  sh_dcr[zi].dd.xv ]
+        #        X_new_f = [ X_new_f ; sh_dcr[zi].xfcost ]
+        #        total_steps += sh_dcr[zi].dd.steps_success
+        #    end
+        ##end
+        #X   = [X     X_new   ]
+        #Xv  = [Xv    Xv_new  ]
+        #X_f = [X_f ; X_new_f ]
+    #end
+#end

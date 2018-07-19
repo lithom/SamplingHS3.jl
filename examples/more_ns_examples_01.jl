@@ -21,7 +21,7 @@ xx  = SamplingHS3.draw_gaussmixture( gm2 , 100000 )
 
 
 using Plots
-SamplingHS3.gr_hist_2d( xx , nbins=40 )
+#SamplingHS3.gr_hist_2d( xx , nbins=40 )
 
 
 bb_G = [eye(2);-eye(2)]

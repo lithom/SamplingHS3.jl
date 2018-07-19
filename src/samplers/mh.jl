@@ -13,6 +13,9 @@ end
 function MHSamplingTrackingData()
     return MHSamplingTrackingData( Vector{Vector{Float64}}() , Vector{Float64}() , Vector{Float64}() , Vector{Bool}(), Vector{Float64}() , 0 , 0 , 0 )
 end
+function Base.hcat(a::MHSamplingTrackingData,b::MHSamplingTrackingData)
+    return MHSamplingTrackingData( [a.X;b.X] , [a.X_fdens;b.X_fdens] , [a.X_fcost;b.X_fcost] , [a.X_viable;b.X_viable], [a.ratios_polytope_hits;b.ratios_polytope_hits] , a.fevals_density+b.fevals_density , a.fevals_cost+b.fevals_cost  , a.successes+b.successes )
+end
 
 
 """

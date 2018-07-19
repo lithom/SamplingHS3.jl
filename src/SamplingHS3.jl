@@ -6,6 +6,7 @@ export NSConfig , nested_sampling
 
 export interp1_lin , bin2d
 
+export LineSegment , create_line , dist2LS , dist2line
 export GaussMixture , GaussParam , draw_gaussmixture , mvnpdf
 
 # package code goes here

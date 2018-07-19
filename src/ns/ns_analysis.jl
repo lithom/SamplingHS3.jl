@@ -8,19 +8,25 @@ function reconstruct_live_samples(itd::Vector{NSIterData})
       X_live_f[length(itd)] = itd[end].Xf_sorted_out
 
       for zi in ((length(itd)-1):-1:1)
+            println(zi)
             X_live[zi]   = X_live[zi+1]
             X_live_f[zi] = X_live_f[zi+1]
             # remove the sorted out samples
 
-
+            #println(size(itd[zi].dd))
             # remove the newly generated samples of step zi:
-            x_step_i  = reduce( (x,y) -> [x y] , map( x -> x.xx[:,end] , itd[zi].dd ) )
+            x_step_i  = reduce( (x,y) -> [x y] , map( x -> (size(x.xx,2)>0)?x.xx[:,end]:zeros(size(x.xx,1),0)  , itd[zi].dd ) )
             idx_new = Vector{Int64}()
             for zj in 1:size(x_step_i,2)
                  append!(idx_new , find( all( X_live[zi] .== x_step_i[:,zj] , 1 ) ) )
             end
-            X_live[zi]   = X_live[zi][ : , setdiff(collect(1:size(X_live[zi],2)),idx_new) ]
-            X_live_f[zi] = X_live_f[zi][ setdiff(collect(1:size(X_live[zi],2)),idx_new) ]
+
+            idx_live = setdiff(collect(1:size(X_live[zi],2)),idx_new)
+            X_live[zi]   = X_live[zi][ : , idx_live ]
+            X_live_f[zi] = X_live_f[zi][ idx_live ]
+
+            #X_live[zi]   = X_live[zi][ : , setdiff(collect(1:size(X_live[zi],2)),idx_new) ]
+            #X_live_f[zi] = X_live_f[zi][ setdiff(collect(1:size(X_live[zi],2)),idx_new) ]
             #xf_step_i = reduce( (x,y) -> [x;y] , map( x -> x.xxf[end] , itd[zi].dd ) )
 
 

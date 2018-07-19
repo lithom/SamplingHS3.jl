@@ -100,7 +100,7 @@ function run_mcmc( x_::Array{Float64,1} , x_f_density::Float64 , f_density , f_c
     else
         print("mcmc failed..\n")
         print("step_types: \n")
-        print(step_types)
+        print(step_types_all)
         return DecorrelationResult(x,NaN,NaN,DecorrelationData( zeros(d,0) , cnt_successes , cnt_fails , steps_data ,zeros(d,0),[NaN],[NaN],tdata_hr,tdata_mh ))
     end
 end
@@ -189,7 +189,7 @@ function run_adaptive_mcmc( steps::Int , x_::Array{Float64,1} , x_f_density::Flo
 
     # collapse the dds into one..
     dd_collapsed = reduce( Base.hcat , dd )
-    
+
     return AdaptiveMCMCResult( sh_dcr.x , sh_dcr.xfdens , sh_dcr.xfcost , dd_collapsed , data_ecov_raw , data_ecov_regularized )
 end
 

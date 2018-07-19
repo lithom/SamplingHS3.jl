@@ -343,6 +343,7 @@ function xrayshoot_and_bisect(f , threshold , G::Array{Float64,2} , h::Array{Flo
     fevals_expansion = 1
     xc_f        = f(x_cand)
     found_point = false
+    reached_boundary = false # only set true if we reach it..
     if( xc_f < threshold )
         #print("expand..\n")
         # try to find viable point by taking points further away..
